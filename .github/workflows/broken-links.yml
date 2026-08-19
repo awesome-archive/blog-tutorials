@@ -1,0 +1,17 @@
+name: Check for broken links
+on:
+  push:
+  schedule:
+    - cron: '0 5 * * SUN'
+jobs:
+  broken-link-check:
+    runs-on: ubuntu-22.04
+    name: Check for broken links in README.md
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: |
+          npm install -g markdown-link-check@3.10.3
+          find . -type f -name '*.md' -not -path '*/node_modules/*' -not -path '*/build/*' -not -path '*/target/*' | xargs -L1 npx markdown-link-check -c .broken-link-config.json --quiet

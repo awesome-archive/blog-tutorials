@@ -1,0 +1,30 @@
+name: Build Non-Spring Boot Projects
+
+on:
+  push:
+  schedule:
+    - cron: '0 5 * * SUN'
+
+jobs:
+  build-maven-projects:
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: [8, 11, 17]
+    runs-on: ubuntu-latest
+    name: Build Java ${{ matrix.versions }} projects
+    steps:
+      - name: VCS checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.versions }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.versions }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build all projects with Maven
+        run: |
+          chmod +x ./buildJdk${{ matrix.versions }}Projects.sh
+          ./buildJdk${{ matrix.versions }}Projects.sh
